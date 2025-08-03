@@ -12,8 +12,13 @@ A distraction-free, data-driven Pomodoro timer built with Next.js 15, TypeScript
 - **Data Persistence**: Timer state and settings saved to localStorage
 - **Mobile-First Design**: Responsive UI that works on all screen sizes
 
+### ✅ Phase 2 - Preferences & Theming (Completed)
+- **Settings Page**: Customize timer durations and auto-cycle behavior
+- **Theme Picker**: Light, dark, and system theme options with persistence
+- **In-Tab Notifications**: Background notifications when sessions end
+- **Settings Persistence**: All preferences saved to localStorage
+
 ### 🚧 Upcoming Features
-- **Phase 2**: Settings page, theme picker, in-tab notifications
 - **Phase 3**: User authentication, tasks & notes
 - **Phase 4**: Analytics dashboard with heat maps and streaks
 - **Phase 5**: Testing & QA automation

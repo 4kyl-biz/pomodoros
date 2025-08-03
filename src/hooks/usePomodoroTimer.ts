@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { NotificationService } from '@/lib/notifications'
 
 export type TimerState = 'idle' | 'running' | 'paused' | 'break'
 
@@ -36,9 +37,19 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const startTimeRef = useRef<number | null>(null)
   const expectedEndTimeRef = useRef<number | null>(null)
+  const notificationServiceRef = useRef<NotificationService | null>(null)
+
+  // Initialize notification service only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      notificationServiceRef.current = NotificationService.getInstance()
+    }
+  }, [])
 
   // Load timer state from localStorage on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const saved = localStorage.getItem('pomodoro-timer')
     if (saved) {
       try {
@@ -66,6 +77,8 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
 
   // Save timer state to localStorage
   const saveToStorage = useCallback((data: TimerData) => {
+    if (typeof window === 'undefined') return
+
     const storageData = {
       ...data,
       expectedEndTime: data.state === 'running' ? expectedEndTimeRef.current : null
@@ -84,6 +97,8 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
 
   // Play notification sound
   const playNotification = useCallback(() => {
+    if (typeof window === 'undefined') return
+
     const isMuted = localStorage.getItem('pomodoro-muted') === 'true'
     if (!isMuted) {
       const audio = new Audio('/notification.mp3')
@@ -91,6 +106,27 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
         // Fallback to browser beep if audio file doesn't exist
         console.log('\u0007')
       })
+    }
+  }, [])
+
+  // Show in-tab notification
+  const showNotification = useCallback(async (sessionType: string) => {
+    if (typeof window === 'undefined' || !notificationServiceRef.current) return
+
+    const settings = localStorage.getItem('pomodoro-settings')
+    if (settings) {
+      try {
+        const parsed = JSON.parse(settings)
+        if (parsed.notifications) {
+          if (sessionType === 'work') {
+            await notificationServiceRef.current.notifySessionComplete('Work')
+          } else if (sessionType === 'break') {
+            await notificationServiceRef.current.notifyBreakComplete()
+          }
+        }
+      } catch (error) {
+        console.error('Failed to parse settings:', error)
+      }
     }
   }, [])
 
@@ -121,6 +157,9 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
           
           // Play notification sound
           playNotification()
+          
+          // Show in-tab notification
+          showNotification(timerData.isBreak ? 'break' : 'work')
           
           // Handle session completion
           if (!timerData.isBreak) {
@@ -153,7 +192,7 @@ export function usePomodoroTimer(settings: TimerSettings = DEFAULT_SETTINGS) {
         }
       }, 1000)
     }
-  }, [timerData, settings, updateTimer, playNotification])
+  }, [timerData, settings, updateTimer, playNotification, showNotification])
 
   // Pause timer
   const pause = useCallback(() => {

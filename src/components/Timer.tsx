@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { usePomodoroTimer } from '@/hooks/usePomodoroTimer'
+import { useSettings } from '@/contexts/SettingsContext'
 import { formatTime } from '@/lib/utils'
-import { Play, Pause, RotateCcw, SkipForward } from 'lucide-react'
+import { Play, Pause, RotateCcw, SkipForward, Settings } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Timer() {
-  const { timerData, start, pause, resume, reset, skip } = usePomodoroTimer()
+  const { settings } = useSettings()
+  const { timerData, start, pause, resume, reset, skip } = usePomodoroTimer(settings.timer)
   const [isMuted, setIsMuted] = useState(false)
 
   // Load mute state from localStorage
@@ -63,7 +66,12 @@ export default function Timer() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center relative">
+          <Link href="/settings" className="absolute top-0 right-0">
+            <Button variant="ghost" size="sm">
+              <Settings className="w-5 h-5" />
+            </Button>
+          </Link>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Pomodoro Timer
           </h1>
@@ -98,7 +106,7 @@ export default function Timer() {
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 45}`}
-                strokeDashoffset={`${2 * Math.PI * 45 * (1 - (timerData.timeLeft / (timerData.isBreak ? (timerData.isLongBreak ? 15 : 5) : 25) / 60))}`}
+                strokeDashoffset={`${2 * Math.PI * 45 * (1 - (timerData.timeLeft / (timerData.isBreak ? (timerData.isLongBreak ? settings.timer.longBreakDuration : settings.timer.shortBreakDuration) : settings.timer.workDuration) / 60))}`}
               />
             </svg>
             
