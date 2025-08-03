@@ -8,9 +8,9 @@
 ### **Phase 0 – Project Scaffold** *(easiest)*
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **Create repo & initialise Next JS 15 project** | App runs `next dev` with the default page rendered. |
-| ☐ **Add Tailwind CSS & shadcn/ui** | A sample `<Button>` renders with Tailwind styles. |
-| ☐ **Configure Supabase client** | `await supabase.from('pg_catalog.pg_tables')` succeeds in DevTools. |
+| ☑ **Create repo & initialise Next JS 15 project** | App runs `next dev` with the default page rendered. |
+| ☑ **Add Tailwind CSS & shadcn/ui** | A sample `<Button>` renders with Tailwind styles. |
+| ☑ **Configure Supabase client** | `await supabase.from('pg_catalog.pg_tables')` succeeds in DevTools. |
 | ☐ **Push to GitHub & connect Vercel** | Preview deploy succeeds and shows starter page. |
 
 ---
@@ -18,11 +18,11 @@
 ### **Phase 1 – Core Timer MVP**
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **`usePomodoroTimer` hook** | Start → pause → resume → reset flow works; ±1 s drift per 25 min. |
-| ☐ **Short & long break logic** | 4 work sessions trigger 15 min break; counter resets. |
-| ☐ **Sound alerts + mute** | Tone fires at 0 s; mute silences it. |
-| ☐ **Persist to `localStorage`** | Refresh preserves timer & cycle count. |
-| ☐ **Mobile-first UI** | 320 px device shows controls without horizontal scroll. |
+| ☑ **`usePomodoroTimer` hook** | Start → pause → resume → reset flow works; ±1 s drift per 25 min. |
+| ☑ **Short & long break logic** | 4 work sessions trigger 15 min break; counter resets. |
+| ☑ **Sound alerts + mute** | Tone fires at 0 s; mute silences it. |
+| ☑ **Persist to `localStorage`** | Refresh preserves timer & cycle count. |
+| ☑ **Mobile-first UI** | 320 px device shows controls without horizontal scroll. |
 
 ---
 
