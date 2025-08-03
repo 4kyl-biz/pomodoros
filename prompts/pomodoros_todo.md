@@ -29,9 +29,9 @@
 ### **Phase 2 – Preferences & Theming**
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **Settings page** (durations, auto-cycle) | New work length applies and persists. |
-| ☐ **Theme picker** | Light ↔ Dark toggle persists. |
-| ☐ **In-tab notifications** | Background-tab notification fires at session end. |
+| ☑ **Settings page** (durations, auto-cycle) | New work length applies and persists. |
+| ☑ **Theme picker** | Light ↔ Dark toggle persists. |
+| ☑ **In-tab notifications** | Background-tab notification fires at session end. |
 
 ---
 
