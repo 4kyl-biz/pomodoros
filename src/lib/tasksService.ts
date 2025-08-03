@@ -17,6 +17,25 @@ export interface UpdateTaskData {
 export class TasksService {
   static async createTask(data: CreateTaskData): Promise<{ task: Task | null; error: any }> {
     try {
+      // First, check if the user exists in public.users
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', data.userId)
+        .single()
+
+      if (userError || !user) {
+        console.error('User not found in public.users:', data.userId, userError)
+        return { 
+          task: null, 
+          error: { 
+            message: 'User not found. Please try signing out and signing in again.',
+            code: 'USER_NOT_FOUND',
+            details: userError 
+          } 
+        }
+      }
+
       const { data: task, error } = await supabase
         .from('tasks')
         .insert({
@@ -32,6 +51,7 @@ export class TasksService {
 
       return { task, error }
     } catch (error) {
+      console.error('Error creating task:', error)
       return { task: null, error }
     }
   }
@@ -109,15 +129,16 @@ export class TasksService {
         .eq('id', id)
         .single()
 
-      if (getError) {
+      if (getError || !currentTask) {
         return { task: null, error: getError }
       }
 
+      // Toggle the status
       const newStatus = currentTask.status === 'todo' ? 'done' : 'todo'
 
       const { data: task, error } = await supabase
         .from('tasks')
-        .update({
+        .update({ 
           status: newStatus,
           updated_at: new Date().toISOString()
         })
