@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
 export interface TimerSettings {
   workDuration: number // in minutes
@@ -28,6 +28,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 
 interface SettingsContextType {
   settings: AppSettings
+  loading: boolean
   updateTimerSettings: (settings: Partial<TimerSettings>) => void
   updateTheme: (theme: 'light' | 'dark' | 'system') => void
   toggleNotifications: () => void
@@ -37,34 +38,47 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
+  const [loading, setLoading] = useState(true)
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('pomodoro-settings')
-    if (saved) {
+    const loadSettings = () => {
       try {
-        const parsed = JSON.parse(saved)
-        setSettings({ ...DEFAULT_SETTINGS, ...parsed })
+        if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('pomodoro-settings')
+          if (saved) {
+            const parsed = JSON.parse(saved)
+            setSettings({ ...DEFAULT_SETTINGS, ...parsed })
+          }
+        }
       } catch (error) {
         console.error('Failed to load settings:', error)
+      } finally {
+        setLoading(false)
       }
     }
+
+    loadSettings()
   }, [])
 
   // Save settings to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('pomodoro-settings', JSON.stringify(settings))
-  }, [settings])
+    if (!loading && typeof window !== 'undefined') {
+      localStorage.setItem('pomodoro-settings', JSON.stringify(settings))
+    }
+  }, [settings, loading])
 
   // Apply theme to document
   useEffect(() => {
-    const root = document.documentElement
-    const theme = settings.theme === 'system' 
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : settings.theme
-    
-    root.classList.remove('light', 'dark')
-    root.classList.add(theme)
+    if (typeof window !== 'undefined') {
+      const root = document.documentElement
+      const theme = settings.theme === 'system' 
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : settings.theme
+      
+      root.classList.remove('light', 'dark')
+      root.classList.add(theme)
+    }
   }, [settings.theme])
 
   const updateTimerSettings = (newSettings: Partial<TimerSettings>) => {
@@ -88,6 +102,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   return (
     <SettingsContext.Provider value={{
       settings,
+      loading,
       updateTimerSettings,
       updateTheme,
       toggleNotifications

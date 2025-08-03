@@ -13,7 +13,7 @@ import { DataMigrationService } from '@/lib/dataMigration'
 import type { Task } from '@/types/database'
 
 export default function Timer() {
-  const { settings } = useSettings()
+  const { settings, loading: settingsLoading } = useSettings()
   const { user, signOut } = useAuth()
   const { timerData, start, pause, resume, reset, skip } = usePomodoroTimer(settings.timer)
   const [isMuted, setIsMuted] = useState(false)
@@ -113,6 +113,20 @@ export default function Timer() {
       return timerData.isLongBreak ? 'bg-green-500' : 'bg-blue-500'
     }
     return 'bg-red-500'
+  }
+
+  // Show loading state while settings are being loaded
+  if (settingsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Loading settings...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
