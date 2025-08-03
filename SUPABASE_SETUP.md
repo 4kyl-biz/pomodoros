@@ -19,14 +19,26 @@ NEXT_PUBLIC_APP_VERSION=2025-01-27
 
 ## 3. Set Up Database Schema
 
-### Option A: Fresh Setup (Recommended for new projects)
+### Step 1: Check Current Database State
+First, run the `check-tables.sql` script to see what currently exists in your database:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **SQL Editor**
+3. Copy and paste the contents of `check-tables.sql`
+4. Run the script to see what tables/functions exist
+
+### Step 2: Choose Your Setup Approach
+
+#### Option A: Fresh Setup (Recommended for new projects)
+If no tables exist or you want to start completely fresh:
+
 1. Go to your Supabase project dashboard
 2. Navigate to **SQL Editor**
 3. Copy and paste the contents of `supabase-schema.sql`
 4. Run the script
 
-### Option B: Existing Tables (If you have previous tables)
-If you already have tables in your database and want to start fresh:
+#### Option B: Clean Slate Setup (If you have previous tables)
+If you have existing tables and want to start fresh:
 
 1. **⚠️ WARNING: This will delete all existing data!**
 2. Go to your Supabase project dashboard
@@ -34,10 +46,10 @@ If you already have tables in your database and want to start fresh:
 4. First, run the contents of `drop-tables.sql` to remove existing tables
 5. Then, run the contents of `supabase-schema.sql` to create the new schema
 
-### Option C: Manual Table Updates (If you want to keep existing data)
+#### Option C: Manual Table Updates (If you want to keep existing data)
 If you want to preserve existing data, you'll need to manually update your tables:
 
-1. Check which tables already exist in your database
+1. Check which tables already exist in your database (use `check-tables.sql`)
 2. For each missing table, run the corresponding `CREATE TABLE` statement from `supabase-schema.sql`
 3. Add any missing columns to existing tables using `ALTER TABLE` statements
 4. Run the RLS policies and functions separately
@@ -78,6 +90,15 @@ This error occurs when the database schema hasn't been set up yet. Make sure you
 3. Checked that all tables were created successfully
 4. Verified your environment variables are correct
 
+### "relation 'public.users' does not exist" Error
+
+This error occurs when the drop script tries to remove tables that don't exist. The updated `drop-tables.sql` script now handles this properly:
+
+1. **The script is safe to run** - it uses `IF EXISTS` to prevent errors
+2. **Run the drop script first** to clean up any existing tables
+3. **Then run the schema script** to create the new tables
+4. **Use `check-tables.sql`** to verify the current state
+
 ### "Table already exists" Error
 
 If you get errors about tables already existing:
@@ -100,8 +121,9 @@ If you get errors about tables already existing:
 
 ## Schema Files
 
-- **`supabase-schema.sql`** - Complete database schema with all tables, RLS policies, and functions
+- **`check-tables.sql`** - Script to check what tables currently exist in your database
 - **`drop-tables.sql`** - Script to remove all existing tables (⚠️ deletes all data)
+- **`supabase-schema.sql`** - Complete database schema with all tables, RLS policies, and functions
 - **`src/app/test-db/page.tsx`** - Database connection test page
 
 ## Database Tables
