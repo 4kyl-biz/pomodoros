@@ -38,10 +38,10 @@
 ### **Phase 3 – Auth, Tasks & Notes**
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **Supabase Auth (email + GitHub)** | User can sign in/out; user row created. |
-| ☐ **Local → cloud migration** | Sign-in uploads prior local sessions; second device sees same data. |
-| ☐ **CRUD Tasks** | Create/edit/delete task; moves in Supabase. |
-| ☐ **Attach task & note** | Completing a session saves a note visible on session detail. |
+| ☑ **Supabase Auth (email + GitHub)** | User can sign in/out; user row created. |
+| ☑ **Local → cloud migration** | Sign-in uploads prior local sessions; second device sees same data. |
+| ☑ **CRUD Tasks** | Create/edit/delete task; moves in Supabase. |
+| ☑ **Attach task & note** | Completing a session saves a note visible on session detail. |
 
 ---
 
@@ -70,16 +70,16 @@
 ### **Phase 6 – PWA Installation**
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **Web App Manifest & icons** | “Add to Home Screen” prompt appears on Android Chrome. |
+| ☐ **Web App Manifest & icons** | "Add to Home Screen" prompt appears on Android Chrome. |
 | ☐ **Service Worker (next-pwa)** | Offline visit loads timer page & countdown works. |
-| ☐ **Update flow** | New deploy triggers “New version available” toast; reload fetches latest assets. |
+| ☐ **Update flow** | New deploy triggers "New version available" toast; reload fetches latest assets. |
 
 ---
 
 ### **Phase 7 – GDPR, Export & Delete** *(hardest)*
 | Task | Acceptance Criteria |
 | --- | --- |
-| ☐ **Edge Function `export_user_data`** | “Export” downloads ZIP ≤ 5 MB containing JSON & CSV. |
+| ☐ **Edge Function `export_user_data`** | "Export" downloads ZIP ≤ 5 MB containing JSON & CSV. |
 | ☐ **Edge Function `delete_user`** | Confirmed delete removes all user rows; token revoked. |
 | ☐ **Security & RLS audit** | Automated test proves no cross-user data access. |
 | ☐ **MIT License & docs** | `LICENSE` = MIT; `CONTRIBUTING.md` explains PR workflow. |
