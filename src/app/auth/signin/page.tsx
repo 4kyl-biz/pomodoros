@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,8 +15,15 @@ export default function SignInPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const { signIn, signInWithGitHub } = useAuth()
+  const { signIn, signInWithGitHub, user, loading: authLoading } = useAuth()
   const router = useRouter()
+
+  // Redirect to home if user is already authenticated
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.replace('/')
+    }
+  }, [user, authLoading, router])
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,11 +34,9 @@ export default function SignInPage() {
     
     if (error) {
       setError(error.message)
-    } else {
-      router.push('/')
+      setLoading(false)
     }
-    
-    setLoading(false)
+    // Don't redirect here - let the useEffect handle it when user state updates
   }
 
   const handleGitHubSignIn = async () => {
@@ -45,6 +50,11 @@ export default function SignInPage() {
       setLoading(false)
     }
     // Note: GitHub OAuth redirects to callback page, which handles the redirect to home
+  }
+
+  // Don't render the form if user is already authenticated
+  if (user && !authLoading) {
+    return null
   }
 
   return (
@@ -101,9 +111,9 @@ export default function SignInPage() {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={loading}
+                disabled={loading || authLoading}
               >
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading || authLoading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
 
@@ -123,10 +133,10 @@ export default function SignInPage() {
               variant="outline" 
               className="w-full" 
               onClick={handleGitHubSignIn}
-              disabled={loading}
+              disabled={loading || authLoading}
             >
               <Github className="mr-2 h-4 w-4" />
-              {loading ? 'Signing in...' : 'Sign in with GitHub'}
+              {loading || authLoading ? 'Signing in...' : 'Sign in with GitHub'}
             </Button>
 
             <div className="text-center text-sm">
