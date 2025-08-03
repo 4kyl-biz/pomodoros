@@ -134,32 +134,32 @@ export default function Timer() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center relative">
-          <div className="absolute top-0 right-0 flex space-x-2">
+          <div className="absolute top-0 right-0 flex space-x-1">
             {user ? (
               <>
                 <Link href="/tasks">
-                  <Button variant="ghost" size="sm">
-                    <CheckSquare className="w-5 h-5" />
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <CheckSquare className="w-4 h-4" />
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={signOut}>
-                  <LogOut className="w-5 h-5" />
+                <Button variant="ghost" size="sm" onClick={signOut} className="h-8 w-8 p-0">
+                  <LogOut className="w-4 h-4" />
                 </Button>
               </>
             ) : (
               <Link href="/auth/signin">
-                <Button variant="ghost" size="sm">
-                  <User className="w-5 h-5" />
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <User className="w-4 h-4" />
                 </Button>
               </Link>
             )}
             <Link href="/settings">
-              <Button variant="ghost" size="sm">
-                <Settings className="w-5 h-5" />
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <Settings className="w-4 h-4" />
               </Button>
             </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 pr-24">
             Pomodoro Timer
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
