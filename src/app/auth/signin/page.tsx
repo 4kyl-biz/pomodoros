@@ -44,6 +44,7 @@ export default function SignInPage() {
       setError(error.message)
       setLoading(false)
     }
+    // Note: GitHub OAuth redirects to callback page, which handles the redirect to home
   }
 
   return (

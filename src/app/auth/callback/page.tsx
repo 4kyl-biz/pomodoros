@@ -14,22 +14,29 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Wait a bit for the session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {
+          console.error('Auth callback error:', error)
           setError(error.message)
           setLoading(false)
           return
         }
 
         if (data.session) {
+          console.log('Authentication successful, redirecting to home')
           // Successfully authenticated, redirect to home
-          router.push('/')
+          router.replace('/')
         } else {
-          setError('Authentication failed')
+          console.log('No session found, authentication failed')
+          setError('Authentication failed - no session found')
           setLoading(false)
         }
       } catch (err) {
+        console.error('Auth callback unexpected error:', err)
         setError('An unexpected error occurred')
         setLoading(false)
       }
