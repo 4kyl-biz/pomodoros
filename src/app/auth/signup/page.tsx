@@ -1,52 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { Github, Mail, Lock, User } from 'lucide-react'
+import { Github, Mail, Lock } from 'lucide-react'
 import Link from 'next/link'
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
-  const { signUp, signInWithGitHub } = useAuth()
+  const { signUp, signInWithGitHub, user, loading: authLoading } = useAuth()
   const router = useRouter()
+
+  // Redirect to home if user is already authenticated
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.replace('/')
+    }
+  }, [user, authLoading, router])
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setMessage('')
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
-      setLoading(false)
-      return
-    }
 
     const { error } = await signUp(email, password)
     
     if (error) {
       setError(error.message)
+      setLoading(false)
     } else {
-      setMessage('Check your email for a confirmation link!')
+      // Don't redirect here - let the useEffect handle it when user state updates
     }
-    
-    setLoading(false)
   }
 
   const handleGitHubSignUp = async () => {
@@ -59,6 +50,12 @@ export default function SignUpPage() {
       setError(error.message)
       setLoading(false)
     }
+    // Note: GitHub OAuth redirects to callback page, which handles the redirect to home
+  }
+
+  // Don't render the form if user is already authenticated
+  if (user && !authLoading) {
+    return null
   }
 
   return (
@@ -66,9 +63,9 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Create Account</CardTitle>
+            <CardTitle className="text-2xl">Sign Up</CardTitle>
             <CardDescription>
-              Sign up to start tracking your Pomodoro sessions
+              Create an account to sync your Pomodoro sessions across devices
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -97,25 +94,9 @@ export default function SignUpPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="pl-10"
                     required
                   />
@@ -128,18 +109,12 @@ export default function SignUpPage() {
                 </div>
               )}
 
-              {message && (
-                <div className="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-3 rounded">
-                  {message}
-                </div>
-              )}
-
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={loading}
+                disabled={loading || authLoading}
               >
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading || authLoading ? 'Creating account...' : 'Sign Up'}
               </Button>
             </form>
 
@@ -159,10 +134,10 @@ export default function SignUpPage() {
               variant="outline" 
               className="w-full" 
               onClick={handleGitHubSignUp}
-              disabled={loading}
+              disabled={loading || authLoading}
             >
               <Github className="mr-2 h-4 w-4" />
-              {loading ? 'Creating account...' : 'Sign up with GitHub'}
+              {loading || authLoading ? 'Creating account...' : 'Sign up with GitHub'}
             </Button>
 
             <div className="text-center text-sm">

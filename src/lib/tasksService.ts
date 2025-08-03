@@ -14,8 +14,14 @@ export interface UpdateTaskData {
   status?: 'todo' | 'done'
 }
 
+export interface TaskError {
+  message: string
+  code?: string
+  details?: unknown
+}
+
 export class TasksService {
-  static async createTask(data: CreateTaskData): Promise<{ task: Task | null; error: any }> {
+  static async createTask(data: CreateTaskData): Promise<{ task: Task | null; error: TaskError | null }> {
     try {
       // First, check if the user exists in public.users
       const { data: user, error: userError } = await supabase
@@ -49,14 +55,20 @@ export class TasksService {
         .select()
         .single()
 
-      return { task, error }
+      return { task, error: error ? { message: error.message, details: error } : null }
     } catch (error) {
       console.error('Error creating task:', error)
-      return { task: null, error }
+      return { 
+        task: null, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 
-  static async getTasks(userId: string): Promise<{ tasks: Task[] | null; error: any }> {
+  static async getTasks(userId: string): Promise<{ tasks: Task[] | null; error: TaskError | null }> {
     try {
       const { data: tasks, error } = await supabase
         .from('tasks')
@@ -64,13 +76,19 @@ export class TasksService {
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
 
-      return { tasks, error }
+      return { tasks, error: error ? { message: error.message, details: error } : null }
     } catch (error) {
-      return { tasks: null, error }
+      return { 
+        tasks: null, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 
-  static async getTask(id: string): Promise<{ task: Task | null; error: any }> {
+  static async getTask(id: string): Promise<{ task: Task | null; error: TaskError | null }> {
     try {
       const { data: task, error } = await supabase
         .from('tasks')
@@ -78,15 +96,21 @@ export class TasksService {
         .eq('id', id)
         .single()
 
-      return { task, error }
+      return { task, error: error ? { message: error.message, details: error } : null }
     } catch (error) {
-      return { task: null, error }
+      return { 
+        task: null, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 
-  static async updateTask(data: UpdateTaskData): Promise<{ task: Task | null; error: any }> {
+  static async updateTask(data: UpdateTaskData): Promise<{ task: Task | null; error: TaskError | null }> {
     try {
-      const updateData: any = {
+      const updateData: Partial<Task> = {
         updated_at: new Date().toISOString()
       }
 
@@ -101,26 +125,37 @@ export class TasksService {
         .select()
         .single()
 
-      return { task, error }
+      return { task, error: error ? { message: error.message, details: error } : null }
     } catch (error) {
-      return { task: null, error }
+      return { 
+        task: null, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 
-  static async deleteTask(id: string): Promise<{ error: any }> {
+  static async deleteTask(id: string): Promise<{ error: TaskError | null }> {
     try {
       const { error } = await supabase
         .from('tasks')
         .delete()
         .eq('id', id)
 
-      return { error }
+      return { error: error ? { message: error.message, details: error } : null }
     } catch (error) {
-      return { error }
+      return { 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 
-  static async toggleTaskStatus(id: string): Promise<{ task: Task | null; error: any }> {
+  static async toggleTaskStatus(id: string): Promise<{ task: Task | null; error: TaskError | null }> {
     try {
       // First get the current task
       const { data: currentTask, error: getError } = await supabase
@@ -130,7 +165,7 @@ export class TasksService {
         .single()
 
       if (getError || !currentTask) {
-        return { task: null, error: getError }
+        return { task: null, error: getError ? { message: getError.message, details: getError } : null }
       }
 
       // Toggle the status
@@ -146,9 +181,15 @@ export class TasksService {
         .select()
         .single()
 
-      return { task, error }
+      return { task, error: error ? { message: error.message, details: error } : null }
     } catch (error) {
-      return { task: null, error }
+      return { 
+        task: null, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error 
+        } 
+      }
     }
   }
 } 

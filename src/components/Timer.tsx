@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { usePomodoroTimer } from '@/hooks/usePomodoroTimer'
 import { useSettings } from '@/contexts/SettingsContext'
@@ -9,7 +9,6 @@ import { formatTime } from '@/lib/utils'
 import { Play, Pause, RotateCcw, SkipForward, Settings, User, LogOut, CheckSquare, Square } from 'lucide-react'
 import Link from 'next/link'
 import { TasksService } from '@/lib/tasksService'
-import { DataMigrationService } from '@/lib/dataMigration'
 import type { Task } from '@/types/database'
 
 export default function Timer() {
@@ -31,22 +30,22 @@ export default function Timer() {
     }
   }, [])
 
-  // Load tasks if user is authenticated
-  useEffect(() => {
-    if (user) {
-      loadTasks()
-    }
-  }, [user])
-
   // Load tasks
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     if (!user) return
 
     const { tasks, error } = await TasksService.getTasks(user.id)
     if (!error && tasks) {
       setTasks(tasks)
     }
-  }
+  }, [user])
+
+  // Load tasks if user is authenticated
+  useEffect(() => {
+    if (user) {
+      loadTasks()
+    }
+  }, [user, loadTasks])
 
   // Save mute state to localStorage
   const toggleMute = () => {
@@ -73,23 +72,6 @@ export default function Timer() {
 
   const handleSkip = () => {
     skip()
-  }
-
-  const handleSessionComplete = async () => {
-    if (user && selectedTask) {
-      // Save session to cloud
-      await DataMigrationService.saveSessionToCloud(user.id, {
-        type: 'work',
-        startedAt: new Date(Date.now() - (settings.timer.workDuration * 60 * 1000)),
-        endedAt: new Date(),
-        taskId: selectedTask.id
-      })
-    }
-
-    // Show note dialog for work sessions
-    if (!timerData.isBreak) {
-      setShowNoteDialog(true)
-    }
   }
 
   const saveSessionNote = async () => {

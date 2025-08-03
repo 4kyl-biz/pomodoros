@@ -1,19 +1,19 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { User, Session } from '@supabase/supabase-js'
 import { DataMigrationService } from '@/lib/dataMigration'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any }>
-  signUp: (email: string, password: string) => Promise<{ error: any }>
-  signInWithGitHub: () => Promise<{ error: any }>
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+  signUp: (email: string, password: string) => Promise<{ error: Error | null }>
+  signInWithGitHub: () => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
-  resetPassword: (email: string) => Promise<{ error: any }>
+  resetPassword: (email: string) => Promise<{ error: Error | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
