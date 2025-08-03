@@ -19,10 +19,28 @@ NEXT_PUBLIC_APP_VERSION=2025-01-27
 
 ## 3. Set Up Database Schema
 
+### Option A: Fresh Setup (Recommended for new projects)
 1. Go to your Supabase project dashboard
 2. Navigate to **SQL Editor**
 3. Copy and paste the contents of `supabase-schema.sql`
 4. Run the script
+
+### Option B: Existing Tables (If you have previous tables)
+If you already have tables in your database and want to start fresh:
+
+1. **⚠️ WARNING: This will delete all existing data!**
+2. Go to your Supabase project dashboard
+3. Navigate to **SQL Editor**
+4. First, run the contents of `drop-tables.sql` to remove existing tables
+5. Then, run the contents of `supabase-schema.sql` to create the new schema
+
+### Option C: Manual Table Updates (If you want to keep existing data)
+If you want to preserve existing data, you'll need to manually update your tables:
+
+1. Check which tables already exist in your database
+2. For each missing table, run the corresponding `CREATE TABLE` statement from `supabase-schema.sql`
+3. Add any missing columns to existing tables using `ALTER TABLE` statements
+4. Run the RLS policies and functions separately
 
 ## 4. Configure Authentication
 
@@ -43,8 +61,8 @@ NEXT_PUBLIC_APP_VERSION=2025-01-27
 ## 6. Test the Setup
 
 1. Start your development server: `npm run dev`
-2. Visit `http://localhost:3000`
-3. Try signing up/signing in
+2. Visit `http://localhost:3000/test-db` to test the database connection
+3. Try signing up/signing in at `http://localhost:3000/auth/signin`
 4. Test creating tasks at `http://localhost:3000/tasks`
 
 ## Troubleshooting
@@ -53,9 +71,20 @@ NEXT_PUBLIC_APP_VERSION=2025-01-27
 
 This error occurs when the database schema hasn't been set up yet. Make sure you've:
 
-1. Run the SQL script in your Supabase SQL Editor
-2. Checked that all tables were created successfully
-3. Verified your environment variables are correct
+1. **For new projects**: Run the SQL script from `supabase-schema.sql` in your Supabase SQL Editor
+2. **For existing projects**: Either:
+   - Run `drop-tables.sql` followed by `supabase-schema.sql` (⚠️ deletes all data)
+   - Or manually add the missing `description` column: `ALTER TABLE tasks ADD COLUMN description TEXT;`
+3. Checked that all tables were created successfully
+4. Verified your environment variables are correct
+
+### "Table already exists" Error
+
+If you get errors about tables already existing:
+
+1. **Option 1**: Use the `drop-tables.sql` script to remove all existing tables, then run `supabase-schema.sql`
+2. **Option 2**: Modify the `CREATE TABLE` statements in `supabase-schema.sql` to use `CREATE TABLE IF NOT EXISTS`
+3. **Option 3**: Manually drop individual tables that are causing conflicts
 
 ### Authentication Issues
 
@@ -67,4 +96,22 @@ This error occurs when the database schema hasn't been set up yet. Make sure you
 
 1. Verify your Supabase URL and keys are correct
 2. Check that your project is not paused
-3. Ensure Row Level Security (RLS) policies are set up correctly 
+3. Ensure Row Level Security (RLS) policies are set up correctly
+
+## Schema Files
+
+- **`supabase-schema.sql`** - Complete database schema with all tables, RLS policies, and functions
+- **`drop-tables.sql`** - Script to remove all existing tables (⚠️ deletes all data)
+- **`src/app/test-db/page.tsx`** - Database connection test page
+
+## Database Tables
+
+The schema creates the following tables:
+
+- **`users`** - User profiles (extends Supabase auth)
+- **`sessions`** - Pomodoro session records
+- **`tasks`** - User tasks with title, description, and status
+- **`notes`** - Session notes and reflections
+- **`tags`** - Task organization tags
+- **`task_tag_xref`** - Many-to-many relationship between tasks and tags
+- **`preferences`** - User settings and preferences 
