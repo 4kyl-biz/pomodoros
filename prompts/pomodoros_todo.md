@@ -11,7 +11,7 @@
 | ☑ **Create repo & initialise Next JS 15 project** | App runs `next dev` with the default page rendered. |
 | ☑ **Add Tailwind CSS & shadcn/ui** | A sample `<Button>` renders with Tailwind styles. |
 | ☑ **Configure Supabase client** | `await supabase.from('pg_catalog.pg_tables')` succeeds in DevTools. |
-| ☐ **Push to GitHub & connect Vercel** | Preview deploy succeeds and shows starter page. |
+| ☑ **Push to GitHub & connect Vercel** | Preview deploy succeeds and shows starter page. |
 
 ---
 
