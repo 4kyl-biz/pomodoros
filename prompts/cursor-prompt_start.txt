@@ -1,0 +1,1 @@
+Use the software requirements (pomodoros_specs.md) and the TODO list (pomodoros_todo.md) to complete Phase 1 of the project in the current directory. Mark items as done in the TODO list only after verifying that the acceptance criteria have been met.
